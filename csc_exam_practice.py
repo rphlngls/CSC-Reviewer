@@ -1,0 +1,452 @@
+import time
+import sys
+from datetime import timedelta
+
+# ========== EXAM DATABASE — All 150 Items & Answers ==========
+EXAM = {
+    "Verbal Ability": {
+        "items": [
+            # Grammar 1–10
+            {"q": "Neither the supervisor nor the employees ______ aware of the schedule change.",
+             "opts": ["is", "are", "was", "has been"], "ans": "B"},
+            {"q": "If I ______ the exam, I will celebrate with my family.",
+             "opts": ["pass", "passed", "will pass", "had passed"], "ans": "A"},
+            {"q": "The committee ______ submitted its final report yesterday.",
+             "opts": ["has", "have", "had", "having"], "ans": "A"},
+            {"q": "She is one of the officials who ______ always on time.",
+             "opts": ["is", "are", "was", "has been"], "ans": "B"},
+            {"q": "By next year, we ______ working here for a decade.",
+             "opts": ["will be", "have been", "will have been", "are"], "ans": "C"},
+            {"q": "The data ______ collected by the research team last month.",
+             "opts": ["was", "were", "is", "are"], "ans": "A"},
+            {"q": "______ you study diligently, you will likely pass.",
+             "opts": ["Unless", "If", "Until", "Though"], "ans": "B"},
+            {"q": "He does not approve ______ late submission of reports.",
+             "opts": ["to", "of", "in", "for"], "ans": "B"},
+            {"q": "Which sentence is correct?",
+             "opts": ["Each of the applicants have their documents.",
+                      "Each of the applicants has his or her documents.",
+                      "Each of the applicant have documents.",
+                      "Each applicants has documents."], "ans": "B"},
+            {"q": "The more you practice, ______ you become.",
+             "opts": ["the better", "better", "the more better", "much better"], "ans": "A"},
+            # Vocabulary 11–20
+            {"q": "The manager’s speech was succinct.",
+             "opts": ["lengthy", "brief", "confusing", "detailed"], "ans": "B"},
+            {"q": "Public servants must show integrity at all times.",
+             "opts": ["wealth", "honesty", "influence", "authority"], "ans": "B"},
+            {"q": "The delay was inevitable given the storm.",
+             "opts": ["avoidable", "certain", "unexpected", "unusual"], "ans": "B"},
+            {"q": "Her promotion was merited due to hard work.",
+             "opts": ["undeserved", "earned", "delayed", "denied"], "ans": "B"},
+            {"q": "The official issued a categorical denial of the allegations.",
+             "opts": ["vague", "absolute", "partial", "formal"], "ans": "B"},
+            {"q": "Prudent management of public funds is required.",
+             "opts": ["wise", "fast", "generous", "strict"], "ans": "A"},
+            {"q": "The memorandum was ambiguous.",
+             "opts": ["clear", "unclear", "short", "official"], "ans": "B"},
+            {"q": "They undertook the task with zeal.",
+             "opts": ["reluctance", "enthusiasm", "caution", "difficulty"], "ans": "B"},
+            {"q": "The decision was revoked due to legal errors.",
+             "opts": ["confirmed", "cancelled", "delayed", "reviewed"], "ans": "B"},
+            {"q": "He is adept at resolving conflicts.",
+             "opts": ["skilled", "unable", "reluctant", "honest"], "ans": "A"},
+            # Paragraph Organization 21–25
+            {"q": "Arrange: 1. Without trust, public service cannot function effectively. 2. It is built through transparency, honesty, and accountability. 3. Trust is the foundation of public service. 4. Therefore, every official must work to maintain it.",
+             "opts": ["3–2–1–4", "3–1–2–4", "1–3–2–4", "2–3–1–4"], "ans": "B"},
+            {"q": "Arrange: 1. However, it requires discipline and focus. 2. Success in the Civil Service Exam is achievable. 3. Many pass through consistent study and practice. 4. Those who prepare well stand the best chance.",
+             "opts": ["2–1–3–4", "2–3–1–4", "3–2–1–4", "4–2–3–1"], "ans": "A"},
+            {"q": "Arrange: 1. This power is granted by the 1987 Constitution. 2. The legislative branch creates laws. 3. It is composed of the Senate and House of Representatives. 4. These laws govern the entire nation.",
+             "opts": ["2–1–3–4", "2–3–1–4", "1–2–3–4", "3–2–1–4"], "ans": "A"},
+            {"q": "Arrange: 1. Clean air is essential for health. 2. It also benefits the environment. 3. The Clean Air Act protects this right. 4. Everyone must help reduce pollution.",
+             "opts": ["1–2–3–4", "1–3–2–4", "3–1–2–4", "4–1–3–2"], "ans": "A"},
+            {"q": "Arrange: 1. They serve the people, not themselves. 2. Public officials are public servants. 3. Integrity must guide every decision. 4. This is the essence of public trust.",
+             "opts": ["2–1–3–4", "2–4–1–3", "3–2–1–4", "1–2–3–4"], "ans": "A"},
+            # Reading Comprehension 26–40
+            {"q": "[Passage 1] Main idea: Public service is a public trust...",
+             "opts": ["Government work is profitable.",
+                      "Public service demands ethical conduct and accountability.",
+                      "Officials have no personal rights.",
+                      "Public interest is sometimes unimportant."], "ans": "B"},
+            {"q": "Officials must be accountable to:",
+             "opts": ["Their families", "The people", "Their superiors only", "Political parties"], "ans": "B"},
+            {"q": "Which is prohibited?",
+             "opts": ["Leading a simple life", "Using office for personal benefit",
+                      "Serving with loyalty", "Acting with justice"], "ans": "B"},
+            {"q": "\"Utmost\" means:",
+             "opts": ["least", "greatest", "ordinary", "possible"], "ans": "B"},
+            {"q": "Public interest must be ____ personal interest.",
+             "opts": ["equal to", "secondary to", "above", "separate from"], "ans": "C"},
+            {"q": "[Passage 2] The Philippines is described as:",
+             "opts": ["Monarchic", "Democratic and Republican", "Federal", "Socialist"], "ans": "B"},
+            {"q": "Where does sovereignty reside?",
+             "opts": ["The President", "The people", "The Supreme Court", "The Legislature"], "ans": "B"},
+            {"q": "\"Emanates from\" means:",
+             "opts": ["comes from", "departs from", "separates from", "differs from"], "ans": "A"},
+            {"q": "The State values:",
+             "opts": ["territorial expansion", "human dignity and rights",
+                      "military power above all", "political dynasties"], "ans": "B"},
+            {"q": "Foreign policy emphasizes:",
+             "opts": ["isolation", "peace and equality", "dominance", "neutrality only"], "ans": "B"},
+            {"q": "[Passage 3] Efficiency involves:",
+             "opts": ["wasting resources", "achieving results with minimal waste",
+                      "rushing regardless of quality", "reducing personnel only"], "ans": "B"},
+            {"q": "\"Cutting corners\" means:",
+             "opts": ["saving money", "skipping necessary steps to save time/cost",
+                      "improving methods", "measuring progress"], "ans": "B"},
+            {"q": "Efficient government results in:",
+             "opts": ["slower service", "better service at lower cost",
+                      "higher taxes", "fewer services"], "ans": "B"},
+            {"q": "To be efficient, one must:",
+             "opts": ["plan carefully", "work as fast as possible",
+                      "spend less on training", "avoid planning"], "ans": "A"},
+            {"q": "The tone of the passage is:",
+             "opts": ["critical", "explanatory", "humorous", "persuasive"], "ans": "B"},
+        ]
+    },
+    "Analytical Ability": {
+        "items": [
+            # Number Series 1–10
+            {"q": "4, 9, 16, 25, ?", "opts": ["30", "36", "49", "32"], "ans": "B"},
+            {"q": "3, 6, 12, 24, ?", "opts": ["36", "42", "48", "50"], "ans": "C"},
+            {"q": "5, 8, 11, 14, ?", "opts": ["16", "17", "18", "19"], "ans": "B"},
+            {"q": "1, 1, 2, 3, 5, ?", "opts": ["7", "8", "9", "10"], "ans": "B"},
+            {"q": "100, 81, 64, 49, ?", "opts": ["36", "42", "25", "34"], "ans": "A"},
+            {"q": "2, 5, 10, 17, ?", "opts": ["24", "26", "28", "30"], "ans": "B"},
+            {"q": "1/2, 1/4, 1/8, ?", "opts": ["1/10", "1/12", "1/16", "1/32"], "ans": "C"},
+            {"q": "7, 14, 28, 56, ?", "opts": ["84", "102", "112", "120"], "ans": "C"},
+            {"q": "2, 4, 7, 11, 16, ?", "opts": ["20", "21", "22", "23"], "ans": "C"},
+            {"q": "1, 4, 9, 16, 25, 36, ?", "opts": ["45", "49", "54", "64"], "ans": "B"},
+            # Logic & Syllogisms 11–25
+            {"q": "All civil servants are public servants. Some public servants are teachers. Therefore:",
+             "opts": ["All civil servants are teachers", "Some teachers are civil servants",
+                      "No civil servant is a teacher", "None of the above"], "ans": "D"},
+            {"q": "All diligent employees are promoted. Ana was promoted. Therefore:",
+             "opts": ["Ana is diligent", "Ana is not diligent",
+                      "Ana may or may not be diligent", "Ana is lazy"], "ans": "C"},
+            {"q": "If it rains, event is cancelled. Event not cancelled. Therefore:",
+             "opts": ["It rained", "It did not rain",
+                      "It might have rained", "Rain does not affect event"], "ans": "B"},
+            {"q": "No honest person lies. Maria never lies. Therefore:",
+             "opts": ["Maria is honest", "Maria may be honest",
+                      "Maria is not honest", "Maria is perfect"], "ans": "B"},
+            {"q": "Some managers are efficient. All efficient workers are valued. Therefore:",
+             "opts": ["All managers are valued", "Some managers are valued",
+                      "No manager is valued", "Valued workers are managers"], "ans": "B"},
+            {"q": "If budget approved, services improve. Services did not improve. Therefore:",
+             "opts": ["Budget approved", "Budget not approved",
+                      "Approval does not affect", "Services improved anyway"], "ans": "B"},
+            {"q": "All public officials serve people. John serves people. Therefore:",
+             "opts": ["John is an official", "John may be an official",
+                      "John is not an official", "John must be official"], "ans": "B"},
+            {"q": "Most honest, most hardworking. Therefore:",
+             "opts": ["All are both", "Some are both",
+                      "All honest are hardworking", "None"], "ans": "B"},
+            {"q": "A > B and B > C. Therefore:",
+             "opts": ["A > C", "A = C", "A < C", "C > A"], "ans": "A"},
+            {"q": "All laws are just or intended to be. This is a law. Therefore:",
+             "opts": ["It is just", "Intended to be just",
+                      "May be unjust", "Unconstitutional"], "ans": "B"},
+            {"q": "Odd one out:",
+             "opts": ["Triangle", "Square", "Circle", "Rectangle"], "ans": "C"},
+            {"q": "Odd one out:",
+             "opts": ["Honesty", "Integrity", "Corruption", "Loyalty"], "ans": "C"},
+            {"q": "Today Monday. 100 days from now?",
+             "opts": ["Wednesday", "Thursday", "Friday", "Saturday"], "ans": "B"},
+            {"q": "A2, B4, C6, D8, ?",
+             "opts": ["E10", "E9", "F10", "E12"], "ans": "A"},
+            {"q": "Lito 18th from left, 24th from right. Total people?",
+             "opts": ["40", "41", "42", "43"], "ans": "B"},
+            # Analytical Problems 26–40
+            {"q": "Joy≠nurse, May≠teacher, Tess≠accountant≠nurse. Who is nurse?",
+             "opts": ["Joy", "May", "Tess", "Cannot determine"], "ans": "B"},
+            {"q": "Code=Plan, Plan=Work, Work=Serve. What is done in office?",
+             "opts": ["Plan", "Work", "Serve", "Code"], "ans": "C"},
+            {"q": "A older than B, B younger than C, C older than D. Youngest?",
+             "opts": ["A", "B", "C", "Cannot determine"], "ans": "D"},
+            {"q": "All at ceremony are punctual. No late attends. Therefore:",
+             "opts": ["Punctual always present", "Attendees are punctual",
+                      "Some late attend", "Punctuality not required"], "ans": "B"},
+            {"q": "3 workers finish in 4 days. 6 workers in __ days?",
+             "opts": ["1", "2", "3", "8"], "ans": "B"},
+            {"q": "1, 4, 9, 16, ?, 36",
+             "opts": ["20", "25", "28", "30"], "ans": "B"},
+            {"q": "X:Y = 3:9. X=6, Y=?",
+             "opts": ["12", "18", "24", "27"], "ans": "B"},
+            {"q": "*=+, +=−, −=×, ×=*. 8*4+2−3 = ?",
+             "opts": ["20", "18", "14", "10"], "ans": "A"},
+            {"q": "Not red=12, not blue=15, not green=11. Total pens?",
+             "opts": ["19", "20", "21", "22"], "ans": "B"},
+            {"q": "All officers leaders. Some leaders serve. Some officers serve?",
+             "opts": ["True", "False", "Uncertain", "Impossible"], "ans": "C"},
+            {"q": "Z, Y, X, ?", "opts": ["W", "V", "U", "A"], "ans": "A"},
+            {"q": "Clock loses 5 min/hr. Set right 8AM. At 2PM shows?",
+             "opts": ["1:30 PM", "1:55 PM", "2:30 PM", "12:30 PM"], "ans": "A"},
+            {"q": "Face East → turn 90° clockwise → 180°. Direction?",
+             "opts": ["North", "South", "East", "West"], "ans": "B"},
+            {"q": "4 pens = 3 notebooks. Notebook ₱40. Pen price?",
+             "opts": ["₱25", "₱30", "₱32", "₱35"], "ans": "B"},
+            {"q": "2, 6, 12, 20, ?", "opts": ["28", "30", "32", "36"], "ans": "B"},
+        ]
+    },
+    "Numerical Ability": {
+        "items": [
+            # Fundamentals 1–10
+            {"q": "148 + 275 + 36 = ?", "opts": ["459", "469", "479", "489"], "ans": "B"},
+            {"q": "800 − 247.5 = ?", "opts": ["552.5", "563.5", "542.5", "553.5"], "ans": "A"},
+            {"q": "0.25 × 0.4 = ?", "opts": ["0.1", "0.01", "0.45", "1.0"], "ans": "A"},
+            {"q": "144 ÷ 1.2 = ?", "opts": ["12", "120", "14.4", "144"], "ans": "B"},
+            {"q": "10 − 3×2 + 8÷4 = ?", "opts": ["12", "8", "6", "4"], "ans": "B"},
+            {"q": "3/8 + 1/4 = ?", "opts": ["4/12", "5/8", "1/2", "7/8"], "ans": "B"},
+            {"q": "5/6 − 1/3 = ?", "opts": ["1/2", "2/3", "3/6", "4/9"], "ans": "A"},
+            {"q": "2/5 × 3/4 = ?", "opts": ["3/10", "5/9", "1/2", "6/5"], "ans": "A"},
+            {"q": "12 is what percent of 80?", "opts": ["12%", "15%", "18%", "20%"], "ans": "B"},
+            {"q": "25% of 640 = ?", "opts": ["140", "150", "160", "170"], "ans": "C"},
+            # Algebra 11–20
+            {"q": "3x − 7 = 20 → x = ?", "opts": ["7", "8", "9", "10"], "ans": "C"},
+            {"q": "2(a+5) = 24 → a = ?", "opts": ["5", "7", "9", "12"], "ans": "B"},
+            {"q": "5y + 3 = 2y + 15 → y = ?", "opts": ["3", "4", "5", "6"], "ans": "B"},
+            {"q": "Sum 3 consecutive = 45 → largest = ?", "opts": ["14", "15", "16", "17"], "ans": "C"},
+            {"q": "2x = 3y, x=6 → y = ?", "opts": ["4", "6", "8", "9"], "ans": "A"},
+            {"q": "Simplify: 4a + 3b − 2a + 5b",
+             "opts": ["2a + 8b", "6a + 8b", "2a + 2b", "8a + 8b"], "ans": "A"},
+            {"q": "Product = 72, one = 8 → other = ?", "opts": ["7", "8", "9", "10"], "ans": "C"},
+            {"q": "x/4 = 12 → x = ?", "opts": ["3", "36", "48", "60"], "ans": "C"},
+            {"q": "3 years from now Ana = 26 → present age = ?", "opts": ["21", "22", "23", "24"], "ans": "C"},
+            {"q": "Largest value?", "opts": ["0.45", "42%", "2/5", "0.445"], "ans": "A"},
+            # Geometry 21–25
+            {"q": "Perimeter square = 48 cm → side = ?", "opts": ["10 cm", "12 cm", "14 cm", "16 cm"], "ans": "B"},
+            {"q": "Rect l=12, w=8 → area = ?", "opts": ["20 m²", "40 m²", "96 m²", "100 m²"], "ans": "C"},
+            {"q": "Circle r=7 cm (π=22/7) → circumference = ?", "opts": ["22 cm", "44 cm", "66 cm", "88 cm"], "ans": "B"},
+            {"q": "Right triangle legs 6,8 → hypotenuse = ?", "opts": ["9 cm", "10 cm", "11 cm", "12 cm"], "ans": "B"},
+            {"q": "Cube side=5 cm → volume = ?", "opts": ["25 cm³", "75 cm³", "100 cm³", "125 cm³"], "ans": "D"},
+            # Word Problems 26–40
+            {"q": "5 notebooks ₱90 → 12 cost?", "opts": ["₱196", "₱204", "₱216", "₱228"], "ans": "C"},
+            {"q": "Shirt ₱750, 15% discount → sale price?", "opts": ["₱625.00", "₱637.50", "₱642.50", "₱600.00"], "ans": "B"},
+            {"q": "180 km in 3 hrs → speed?", "opts": ["50 kph", "55 kph", "60 kph", "65 kph"], "ans": "C"},
+            {"q": "₱15,000 at 4%/yr → interest 1 yr?", "opts": ["₱500", "₱600", "₱700", "₱800"], "ans": "B"},
+            {"q": "Sum = 60, one twice other → larger = ?", "opts": ["30", "35", "40", "45"], "ans": "C"},
+            {"q": "6 workers in 10 days → 4 workers in __ days?", "opts": ["12", "15", "16", "18"], "ans": "B"},
+            {"q": "Budget ₱50K, spent ₱42K → % spent?", "opts": ["76%", "80%", "84%", "88%"], "ans": "C"},
+            {"q": "Fence: length + 2×width; l=18, w=12 → total?", "opts": ["42 m", "48 m", "54 m", "60 m"], "ans": "C"},
+            {"q": "₱18K → ₱20,700 → % increase?", "opts": ["10%", "12%", "15%", "18%"], "ans": "C"},
+            {"q": "Jan 1 Thu → Jan 21?", "opts": ["Tuesday", "Wednesday", "Thursday", "Friday"], "ans": "C"},
+            {"q": "Sold ₱340 at 15% loss → cost price?", "opts": ["₱380", "₱400", "₱420", "₱440"], "ans": "B"},
+            {"q": "Ratio men:women = 4:5, total 36 → women?", "opts": ["16", "18", "20", "22"], "ans": "C"},
+            {"q": "Trains 60 & 75 kph apart 2 hrs same direction → distance?", "opts": ["25 km", "30 km", "35 km", "40 km"], "ans": "B"},
+            {"q": "12% tax on ₱8,500 → total?", "opts": ["₱9,320", "₱9,420", "₱9,520", "₱9,620"], "ans": "B"},
+            {"q": "₱500/mo at 6% annual simple interest → 2 yrs total?", "opts": ["₱12,000", "₱12,360", "₱12,720", "₱13,000"], "ans": "B"},
+        ]
+    },
+    "General Information": {
+        "items": [
+            {"q": "Supreme law of Philippines?",
+             "opts": ["Civil Code", "1987 Constitution", "Family Code", "Revised Penal Code"], "ans": "B"},
+            {"q": "\"Public Office is a Public Trust\" found in?",
+             "opts": ["Art. II Sec.1", "Art. XI Sec.1", "Art. III Sec.1", "Art. VII Sec.1"], "ans": "B"},
+            {"q": "RA 6713 is known as?",
+             "opts": ["Anti-Graft Law", "Code of Conduct & Ethical Standards",
+                      "Clean Air Act", "Labor Code"], "ans": "B"},
+            {"q": "Philippines is a ____ and ____ State.",
+             "opts": ["Monarchic–Unitary", "Democratic–Republican",
+                      "Federal–Presidential", "Socialist–Democratic"], "ans": "B"},
+            {"q": "Sovereignty resides in the:",
+             "opts": ["Government", "People", "President", "Legislature"], "ans": "B"},
+            {"q": "Three branches of government:",
+             "opts": ["President, Senate, Courts", "Executive, Legislative, Judicial",
+                      "National, Local, Judiciary", "Senate, House, Supreme Court"], "ans": "B"},
+            {"q": "Power to make laws belongs to:",
+             "opts": ["Executive", "Legislative", "Judicial", "People"], "ans": "B"},
+            {"q": "Legislative branch composed of:",
+             "opts": ["Senate & House of Reps", "President & Cabinet",
+                      "Supreme Court & Sandiganbayan", "Senators & Mayors"], "ans": "A"},
+            {"q": "President term = __ years, __ re-election.",
+             "opts": ["6; one", "6; no", "4; unlimited", "5; one"], "ans": "B"},
+            {"q": "Power to interpret laws belongs to:",
+             "opts": ["Congress", "President", "Judiciary", "Ombudsman"], "ans": "C"},
+            {"q": "RA 6713: uphold ____ above personal interest.",
+             "opts": ["Party interest", "Public interest", "Family interest", "Regional interest"], "ans": "B"},
+            {"q": "NOT a norm of conduct under RA 6713:",
+             "opts": ["Integrity", "Professionalism", "Partisanship", "Political Neutrality"], "ans": "C"},
+            {"q": "Accepting gifts for official favor is:",
+             "opts": ["Encouraged", "Prohibited", "Allowed if small", "Discretionary"], "ans": "B"},
+            {"q": "State take private property with just compensation:",
+             "opts": ["Police Power", "Eminent Domain", "Taxation", "Veto Power"], "ans": "B"},
+            {"q": "Due process means:",
+             "opts": ["Everyone gets what they want",
+                      "No deprivation without legal process",
+                      "Trials are free", "All accused guilty until proven innocent"], "ans": "B"},
+            {"q": "Constitutional right:",
+             "opts": ["Right to bear arms", "Right to due process",
+                      "Right to gov't job", "Right to travel freely"], "ans": "B"},
+            {"q": "Bill of Rights is Article __.",
+             "opts": ["I", "II", "III", "IV"], "ans": "C"},
+            {"q": "Citizen's duty includes:",
+             "opts": ["To pay taxes", "To vote always",
+                      "To hold office", "To join a party"], "ans": "A"},
+            {"q": "State protects right to balanced and healthful:",
+             "opts": ["Economy", "Ecology", "Income", "Education"], "ans": "B"},
+            {"q": "RA 8749 = ?",
+             "opts": ["Clean Air Act", "Solid Waste Management Act",
+                      "Water Code", "Forestry Reform Act"], "ans": "A"},
+            {"q": "RA 9003 manages:",
+             "opts": ["Hazardous waste", "Solid waste",
+                      "Industrial waste", "Medical waste"], "ans": "B"},
+            {"q": "Fundamental human right:",
+             "opts": ["Right to own land", "Right to life",
+                      "Free education all levels", "Right to employment"], "ans": "B"},
+            {"q": "Ombudsman investigates:",
+             "opts": ["Private citizens", "Public officials",
+                      "Foreigners", "Judges only"], "ans": "B"},
+            {"q": "Sandiganbayan handles:",
+             "opts": ["Murder", "Graft and corruption",
+                      "Civil disputes", "Traffic violations"], "ans": "B"},
+            {"q": "Equal protection applies to:",
+             "opts": ["Citizens only", "Every person",
+                      "Officials only", "Taxpayers"], "ans": "B"},
+            {"q": "Power of the purse belongs to:",
+             "opts": ["Executive", "Legislative", "Judicial", "COA"], "ans": "B"},
+            {"q": "VP becomes President when:",
+             "opts": ["President travels", "President resigns/dies/impeached",
+                      "Congress votes", "Term ends"], "ans": "B"},
+            {"q": "Eminent domain requires:",
+             "opts": ["Just compensation", "Majority approval",
+                      "Court approval 30 days", "No payment"], "ans": "A"},
+            {"q": "Public officials shall lead ____ lives.",
+             "opts": ["Extravagant", "Modest", "Luxurious", "Expensive"], "ans": "B"},
+            {"q": "TRUE about 1987 Constitution:",
+             "opts": ["Can be suspended by President", "Highest legal authority",
+                      "Ratified 1973", "No Bill of Rights"], "ans": "B"},
+        ]
+    }
+}
+
+TOTAL_TIME_SEC = 3 * 60 * 60  # Official: 3 hours
+TOTAL_ITEMS = sum(len(sec["items"]) for sec in EXAM.values())
+
+# ========== HELPER FUNCTIONS ==========
+def format_time(secs):
+    return str(timedelta(seconds=max(0, int(secs))))
+
+def countdown_timer(remaining):
+    while remaining > 0:
+        print(f"\r⏱ Time Remaining: {format_time(remaining)}", end="", flush=True)
+        time.sleep(1)
+        remaining -= 1
+    print("\n⏰ TIME'S UP!")
+
+def ask_question(item_num, total_num, question, options, show_ans=False):
+    print(f"\n--- Item {item_num}/{total_num} ---")
+    print(question)
+    labels = ["A", "B", "C", "D"]
+    for lbl, opt in zip(labels, options):
+        print(f"  {lbl}. {opt}")
+    while True:
+        resp = input("Your answer (A/B/C/D): ").strip().upper()
+        if resp in labels:
+            return resp
+        print("Invalid input — enter A, B, C, or D.")
+
+def run_section(section_name, items, review_items=None):
+    answers = {}
+    if review_items is None:
+        items_to_do = list(enumerate(items, 1))
+    else:
+        items_to_do = [(i+1, items[i]) for i in review_items]
+    total = len(items_to_do)
+    for display_num, (orig_idx, item) in enumerate(items_to_do, 1):
+        resp = ask_question(display_num, total, item["q"], item["opts"])
+        answers[orig_idx] = resp
+    return answers
+
+def calc_score(section_data, user_answers):
+    correct = 0
+    wrong_indices = []
+    for idx, item in enumerate(section_data["items"]):
+        if user_answers.get(idx) == item["ans"]:
+            correct += 1
+        else:
+            wrong_indices.append(idx)
+    return correct, len(section_data["items"]), wrong_indices
+
+# ========== MAIN PROGRAM ==========
+def main():
+    print("="*60)
+    print("   PHILIPPINE CIVIL SERVICE EXAM — PROFESSIONAL PRACTICE")
+    print(f"   Total Items: {TOTAL_ITEMS} | Time Limit: 3 Hours")
+    print("="*60)
+    input("Press ENTER or type START to begin: ").strip().upper()
+    print("\nExam started — timer running...")
+
+    # Start timer in background
+    import threading
+    timer_thread = threading.Thread(target=countdown_timer, args=(TOTAL_TIME_SEC,), daemon=True)
+    timer_thread.start()
+    start_time = time.time()
+
+    # Full exam run
+    all_user_answers = {}
+    for sec_name, sec_data in EXAM.items():
+        print(f"\n{'='*50}")
+        print(f"  PART: {sec_name} ({len(sec_data['items'])} items)")
+        print('='*50)
+        all_user_answers[sec_name] = run_section(sec_name, sec_data["items"])
+
+    elapsed = time.time() - start_time
+    print(f"\n✅ Exam completed in {format_time(elapsed)}")
+
+    # Score and collect wrongs
+    full_wrongs = {}
+    grand_correct = 0
+    grand_total = 0
+    for sec_name in EXAM:
+        c, t, w = calc_score(EXAM[sec_name], all_user_answers[sec_name])
+        full_wrongs[sec_name] = w
+        grand_correct += c
+        grand_total += t
+        print(f"  {sec_name}: {c}/{t} — {100*c/t:.1f}%")
+
+    print(f"\n===== FINAL SCORE: {grand_correct}/{grand_total} ({100*grand_correct/grand_total:.1f}%) =====")
+    passing = 0.80 * grand_total
+    if grand_correct >= passing:
+        print("🎉 PASSED! (80% or higher)")
+    else:
+        print("📉 Below passing mark — keep practicing.")
+
+    # Review loop until perfect score
+    round_num = 1
+    while any(w for w in full_wrongs.values()):
+        print(f"\n{'='*50}")
+        print(f"  REVIEW ROUND {round_num} — {sum(len(w) for w in full_wrongs.values())} items to retry")
+        print("  (Correct answers will NOT be shown — answer again from memory)")
+        print('='*50)
+        input("Press ENTER to start review: ")
+
+        new_wrongs = {}
+        round_correct = 0
+        round_total = 0
+        for sec_name, wrong_indices in full_wrongs.items():
+            if not wrong_indices:
+                continue
+            print(f"\n--- Review: {sec_name} ---")
+            new_ans = run_section(sec_name, EXAM[sec_name]["items"], wrong_indices)
+            c, t, nw = calc_score(EXAM[sec_name], new_ans)
+            round_correct += c
+            round_total += t
+            new_wrongs[sec_name] = nw
+
+        full_wrongs = new_wrongs
+        print(f"\nReview {round_num} Result: {round_correct}/{round_total} corrected")
+        round_num += 1
+
+    print("\n" + "⭐"*20)
+    print("  PERFECT SCORE ACHIEVED! ALL ITEMS CORRECT.")
+    print("  You are fully prepared!")
+    print("⭐"*20)
+
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\n\n❌ Exam cancelled by user.")
+        sys.exit(0)

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#123b32">
+  <meta name="description" content="Practice for the Philippine Civil Service Exam with a timed 150-item exam.">
+  <title>Civil Service Exam Practice</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Civil Service Exam Practice home">
+      <span class="brand-mark" aria-hidden="true">CS</span>
+      <span>Civil Service Exam Practice</span>
+    </a>
+    <span class="header-note">Philippine Civil Service Exam</span>
+  </header>
+
+  <main>
+    <section id="loading-screen" class="panel loading-panel" aria-live="polite">
+      <p>Loading the practice exam…</p>
+    </section>
+
+    <section id="start-screen" class="panel start-panel" hidden>
+      <p class="eyebrow">PROFESSIONAL LEVEL</p>
+      <h1>Prepare with purpose.</h1>
+      <p class="lead">Take a full-length practice exam covering the four core areas of the Philippine Civil Service Exam.</p>
+      <div class="exam-facts">
+        <div><strong id="total-items">150</strong><span>questions</span></div>
+        <div><strong>3 hours</strong><span>time limit</span></div>
+        <div><strong>80%</strong><span>passing mark</span></div>
+      </div>
+      <ul class="section-list" id="section-list"></ul>
+      <p class="notice">Your answers stay in this browser and are not sent to a server.</p>
+      <button id="start-button" class="button button-primary">Start practice exam</button>
+    </section>
+
+    <section id="exam-screen" hidden>
+      <div class="exam-topline">
+        <div>
+          <p class="eyebrow" id="mode-label">FULL PRACTICE EXAM</p>
+          <h1 id="section-name">Verbal Ability</h1>
+        </div>
+        <div class="timer-card" aria-live="polite">
+          <span>TIME REMAINING</span>
+          <strong id="timer">03:00:00</strong>
+        </div>
+      </div>
+
+      <div class="progress-row">
+        <span id="question-count">Question 1 of 150</span>
+        <span id="answered-count">0 answered</span>
+      </div>
+      <div class="progress-track" role="progressbar" aria-label="Exam progress" aria-valuemin="0" aria-valuemax="150" aria-valuenow="0">
+        <span id="progress-fill"></span>
+      </div>
+
+      <article class="question-card">
+        <p class="question-label" id="question-label">QUESTION 1</p>
+        <h2 id="question-text"></h2>
+        <fieldset id="options" class="options">
+          <legend class="visually-hidden">Choose an answer</legend>
+        </fieldset>
+      </article>
+
+      <div class="exam-controls">
+        <button id="previous-button" class="button button-secondary">Previous</button>
+        <button id="submit-button" class="button button-outline">Finish exam</button>
+        <button id="next-button" class="button button-primary">Next question</button>
+      </div>
+      <p class="keyboard-hint">You can move between questions without losing your answers.</p>
+    </section>
+
+    <section id="results-screen" class="panel results-panel" hidden aria-live="polite">
+      <p class="eyebrow" id="results-eyebrow">EXAM COMPLETE</p>
+      <h1 id="results-title">Your results</h1>
+      <p id="results-message" class="lead"></p>
+      <div class="score-summary">
+        <strong id="score-number">0/150</strong>
+        <span id="score-percent">0%</span>
+      </div>
+      <h2 class="breakdown-heading">Section breakdown</h2>
+      <div id="section-results" class="section-results"></div>
+      <p id="missed-count" class="notice"></p>
+      <div class="results-actions">
+        <button id="retry-button" class="button button-primary">Review missed questions</button>
+        <button id="restart-button" class="button button-secondary">Start a new exam</button>
+      </div>
+    </section>
+
+    <section id="error-screen" class="panel error-panel" hidden role="alert">
+      <h1>We couldn’t load the practice exam.</h1>
+      <p id="error-message">Check your connection and reload the page.</p>
+    </section>
+  </main>
+
+  <footer>
+    <span>Independent study tool · Not affiliated with the Civil Service Commission</span>
+  </footer>
+</body>
+</html>
